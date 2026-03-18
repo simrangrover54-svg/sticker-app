@@ -6,10 +6,6 @@ export default function Builder() {
   const [step, setStep] = useState(1);
   const [showPopup, setShowPopup] = useState(false);
 
-  const [aiInput, setAiInput] = useState("");
-  const [aiResponse, setAiResponse] = useState("");
-  const [loading, setLoading] = useState(false);
-
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
@@ -17,12 +13,12 @@ export default function Builder() {
     category: "",
     type: "",
     cutting: "",
-    file: null as File | null, // ✅ added
+    file: null as File | null,
     email: "",
     phone: "",
   });
 
-  // DATA (UNCHANGED)
+  // DATA
   const categories = [
     {
       name: "Paper Sticker",
@@ -70,7 +66,6 @@ export default function Builder() {
   const handleNext = () => setStep((prev) => prev + 1);
   const handleBack = () => setStep((prev) => prev - 1);
 
-  // ✅ FIXED SUBMIT (FORMDATA)
   const handleSubmit = async () => {
     setError("");
 
@@ -108,32 +103,6 @@ export default function Builder() {
     setSubmitting(false);
   };
 
-  const handleAI = async () => {
-    if (!aiInput) return;
-
-    setLoading(true);
-    setAiResponse("");
-
-    const res = await fetch("/api/ai", {
-      method: "POST",
-      body: JSON.stringify({ prompt: aiInput }),
-    });
-
-    const data = await res.json();
-
-    setAiResponse(data.reply);
-
-    if (data.category) {
-      setSelection((prev) => ({
-        ...prev,
-        category: data.category,
-      }));
-    }
-
-    setLoading(false);
-  };
-
-  // ✅ FIXED HOVER (EXACT BEHAVIOR)
   const renderOption = (item: any, value: string, keyName: string) => {
     const isSelected = value === item.name;
 
@@ -173,7 +142,6 @@ export default function Builder() {
       <div className="absolute inset-0 bg-black/20" />
 
       <div className="relative bg-neutral-900/80 backdrop-blur-xl rounded-3xl p-8 w-full max-w-md text-center shadow-2xl">
-
         <h1 className="text-2xl text-white mb-6">
           Build Your Sticker
         </h1>
@@ -181,25 +149,6 @@ export default function Builder() {
         {/* STEP 1 */}
         {step === 1 && (
           <>
-            <input
-              type="text"
-              placeholder="Describe what you need..."
-              value={aiInput}
-              onChange={(e) => setAiInput(e.target.value)}
-              className="w-full p-3 rounded bg-neutral-800 text-white mb-3"
-            />
-
-            <button
-              onClick={handleAI}
-              className="px-4 py-2 bg-white text-black rounded-full mb-4"
-            >
-              {loading ? "Thinking..." : "Ask AI"}
-            </button>
-
-            {aiResponse && (
-              <p className="text-gray-300 mb-6">{aiResponse}</p>
-            )}
-
             <p className="text-gray-300 mb-4">Choose Category</p>
 
             <div className="space-y-3 mb-6">
@@ -272,7 +221,7 @@ export default function Builder() {
           </>
         )}
 
-        {/* STEP 4 — UPLOAD */}
+        {/* STEP 4 */}
         {step === 4 && (
           <>
             <p className="text-gray-300 mb-4">Upload Design</p>
@@ -307,7 +256,7 @@ export default function Builder() {
           </>
         )}
 
-        {/* STEP 5 — SUMMARY */}
+        {/* STEP 5 */}
         {step === 5 && (
           <>
             <p className="text-gray-300 mb-4">Summary</p>
@@ -378,30 +327,30 @@ export default function Builder() {
       </div>
 
       {showPopup && (
-  <div className="fixed inset-0 flex items-center justify-center bg-black/70">
-    <div className="bg-white p-6 rounded-xl text-center shadow-xl">
-      <p className="text-black mb-4 font-medium">
-        Order submitted successfully!
-      </p>
+        <div className="fixed inset-0 flex items-center justify-center bg-black/70">
+          <div className="bg-white p-6 rounded-xl text-center shadow-xl">
+            <p className="text-black mb-4 font-medium">
+              Order submitted successfully!
+            </p>
 
-      <div className="flex gap-4 justify-center">
-        <button
-          onClick={() => setShowPopup(false)}
-          className="px-4 py-2 bg-black text-white rounded"
-        >
-          Close
-        </button>
+            <div className="flex gap-4 justify-center">
+              <button
+                onClick={() => setShowPopup(false)}
+                className="px-4 py-2 bg-black text-white rounded"
+              >
+                Close
+              </button>
 
-        <button
-          onClick={() => (window.location.href = "/")}
-          className="px-4 py-2 border border-black rounded"
-        >
-          Go Home
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+              <button
+                onClick={() => (window.location.href = "/")}
+                className="px-4 py-2 border border-black rounded"
+              >
+                Go Home
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
