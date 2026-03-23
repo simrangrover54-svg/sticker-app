@@ -17,6 +17,9 @@ export default function Builder() {
     phone: "",
   });
 
+  // 🔥 NEW: dynamic background
+  const [currentBg, setCurrentBg] = useState("");
+
   const categories = [
     {
       name: "Paper Sticker",
@@ -114,10 +117,11 @@ export default function Builder() {
     return (
       <div key={item.name} className="group">
         <button
-          onClick={() =>
-            setSelection({ ...selection, [keyName]: item.name })
-          }
-          className={`w-full p-3 rounded-2xl transition-all duration-300 transform
+          onClick={() => {
+            setSelection({ ...selection, [keyName]: item.name });
+            setCurrentBg(item.image); // 🔥 bg change
+          }}
+          className={`w-full py-2.5 px-3 rounded-2xl transition-all duration-300 transform
             ${
               isSelected
                 ? "bg-[#d2b48c] text-white shadow-md scale-[1.02]"
@@ -132,14 +136,14 @@ export default function Builder() {
         <div
           className={`
             mt-2 overflow-hidden transition-all duration-500 ease-in-out
-            ${isSelected ? "max-h-40 opacity-100" : "max-h-0 opacity-0"}
-            md:max-h-0 md:opacity-0 md:group-hover:max-h-40 md:group-hover:opacity-100
+            ${isSelected ? "max-h-28 opacity-100" : "max-h-0 opacity-0"}
+            md:max-h-0 md:opacity-0 md:group-hover:max-h-28 md:group-hover:opacity-100
           `}
         >
           <img
             src={item.image}
             alt={item.name}
-            className="w-full h-32 object-cover rounded-xl"
+            className="w-full h-24 md:h-28 object-cover rounded-xl"
           />
         </div>
 
@@ -158,25 +162,41 @@ export default function Builder() {
   };
 
   return (
-    <main
-      className="relative min-h-screen flex items-center justify-center bg-cover bg-center"
-      style={{ backgroundImage: "url('/bg.png')" }}
-    >
-      {/* SOFT OVERLAY */}
-      <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-white/50 to-white/60 backdrop-blur-[2px]" />
+    <main className="relative min-h-screen flex items-center justify-center overflow-hidden">
+
+      {/* DEFAULT BG (LESS BLUR) */}
+      <div
+        className="absolute inset-0 bg-cover bg-center blur-sm scale-105"
+        style={{ backgroundImage: "url('/bg.png')" }}
+      />
+
+      {/* DYNAMIC BG */}
+      {currentBg && (
+        <div
+          className="absolute inset-0 bg-cover bg-center transition-all duration-700"
+          style={{ backgroundImage: `url('${currentBg}')` }}
+        />
+      )}
+
+      {/* SMART OVERLAY */}
+      <div
+        className={`absolute inset-0 transition-all duration-500 ${
+          currentBg ? "bg-black/20" : "bg-white/40"
+        }`}
+      />
 
       {/* CARD */}
-      <div className="relative bg-white/50 backdrop-blur-xl border border-white/60 rounded-3xl p-8 w-full max-w-md text-center shadow-xl shadow-black/10 transition-all duration-500">
-        
-        <h1 className="text-2xl text-neutral-800 mb-2 font-medium tracking-tight">
+      <div className="relative bg-white/50 backdrop-blur-xl border border-white/60 rounded-3xl px-6 py-5 w-full max-w-md md:max-w-lg text-center shadow-xl shadow-black/10 transition-all duration-500">
+
+        <h1 className="text-xl md:text-2xl text-neutral-800 mb-2 font-medium tracking-tight">
           Build Your Sticker
         </h1>
 
         {/* STEP 1 */}
         {step === 1 && (
           <>
-            <p className="text-neutral-500 mb-4">Choose Category</p>
-            <div className="space-y-3 mb-6">
+            <p className="text-neutral-500 mb-3">Choose Category</p>
+            <div className="space-y-2 mb-4">
               {categories.map((item) =>
                 renderOption(item, selection.category, "category")
               )}
@@ -195,9 +215,9 @@ export default function Builder() {
         {/* STEP 2 */}
         {step === 2 && (
           <>
-            <p className="text-neutral-500 mb-4">Choose Type</p>
+            <p className="text-neutral-500 mb-3">Choose Type</p>
 
-            <div className="space-y-3 mb-6">
+            <div className="space-y-2 mb-4">
               {types.map((item) =>
                 renderOption(item, selection.type, "type")
               )}
@@ -222,9 +242,9 @@ export default function Builder() {
         {/* STEP 3 */}
         {step === 3 && (
           <>
-            <p className="text-neutral-500 mb-4">Choose Cutting</p>
+            <p className="text-neutral-500 mb-3">Choose Cutting</p>
 
-            <div className="space-y-3 mb-6">
+            <div className="space-y-2 mb-4">
               {cuttingOptions.map((item) =>
                 renderOption(item, selection.cutting, "cutting")
               )}
@@ -249,7 +269,7 @@ export default function Builder() {
         {/* STEP 4 */}
         {step === 4 && (
           <>
-            <p className="text-neutral-500 mb-4">Upload Design</p>
+            <p className="text-neutral-500 mb-3">Upload Design</p>
 
             <input
               type="file"
@@ -260,11 +280,11 @@ export default function Builder() {
                   file: e.target.files?.[0] || null,
                 })
               }
-              className="w-full text-neutral-700 mb-4"
+              className="w-full text-neutral-700 mb-3"
             />
 
             {selection.file && (
-              <p className="text-sm text-neutral-500 mb-4">
+              <p className="text-sm text-neutral-500 mb-3">
                 {selection.file.name}
               </p>
             )}
@@ -274,7 +294,7 @@ export default function Builder() {
                 Back
               </button>
 
-              <button onClick={handleNext} className="px-4 py-2 bg-[#d2b48c] text-white rounded shadow-sm hover:shadow-md transition">
+              <button onClick={handleNext} className="px-4 py-2 bg-[#d2b48c] text-white rounded shadow-sm">
                 Next
               </button>
             </div>
@@ -284,9 +304,9 @@ export default function Builder() {
         {/* STEP 5 */}
         {step === 5 && (
           <>
-            <p className="text-neutral-500 mb-4">Summary</p>
+            <p className="text-neutral-500 mb-3">Summary</p>
 
-            <div className="text-neutral-700 mb-6 space-y-2">
+            <div className="text-neutral-700 mb-4 space-y-1 text-sm">
               <p>Category: {selection.category}</p>
               <p>Type: {selection.type}</p>
               <p>Cutting: {selection.cutting}</p>
@@ -294,13 +314,8 @@ export default function Builder() {
             </div>
 
             <div className="flex justify-between">
-              <button onClick={handleBack} className="px-4 py-2 border border-white/40 text-neutral-700 rounded">
-                Back
-              </button>
-
-              <button onClick={handleNext} className="px-4 py-2 bg-[#d2b48c] text-white rounded shadow-sm hover:shadow-md transition">
-                Next
-              </button>
+              <button onClick={handleBack}>Back</button>
+              <button onClick={handleNext}>Next</button>
             </div>
           </>
         )}
@@ -308,37 +323,35 @@ export default function Builder() {
         {/* STEP 6 */}
         {step === 6 && (
           <>
-            <p className="text-neutral-500 mb-4">Your Details</p>
+            <p className="text-neutral-500 mb-3">Your Details</p>
 
             {error && <p className="text-red-400 mb-2">{error}</p>}
 
             <input
-              type="email"
-              placeholder="Email"
-              onChange={(e) =>
-                setSelection({ ...selection, email: e.target.value })
-              }
-              className="w-full p-3 rounded bg-white/60 text-neutral-700 mb-3 border border-white/40 focus:outline-none focus:ring-2 focus:ring-[#d2b48c]/40"
-            />
+  type="email"
+  placeholder="Email"
+  onChange={(e) =>
+    setSelection({ ...selection, email: e.target.value })
+  }
+  className="w-full p-3 rounded-lg bg-white/80 text-neutral-800 placeholder:text-neutral-400 mb-3 border border-white/60 focus:outline-none focus:ring-2 focus:ring-[#d2b48c]/50 shadow-sm"
+/>
 
-            <input
-              type="text"
-              placeholder="Phone"
-              onChange={(e) =>
-                setSelection({ ...selection, phone: e.target.value })
-              }
-              className="w-full p-3 rounded bg-white/60 text-neutral-700 mb-4 border border-white/40 focus:outline-none focus:ring-2 focus:ring-[#d2b48c]/40"
-            />
+<input
+  type="text"
+  placeholder="Phone"
+  onChange={(e) =>
+    setSelection({ ...selection, phone: e.target.value })
+  }
+  className="w-full p-3 rounded-lg bg-white/80 text-neutral-800 placeholder:text-neutral-400 mb-4 border border-white/60 focus:outline-none focus:ring-2 focus:ring-[#d2b48c]/50 shadow-sm"
+/>
 
             <div className="flex justify-between">
-              <button onClick={handleBack} className="px-4 py-2 border border-white/40 text-neutral-700 rounded">
-                Back
-              </button>
+              <button onClick={handleBack}>Back</button>
 
               <button
                 onClick={handleSubmit}
                 disabled={submitting || !selection.email || !selection.phone}
-                className="px-4 py-2 bg-[#d2b48c] text-white rounded shadow-md hover:shadow-lg transition disabled:opacity-40"
+                className="px-4 py-2 bg-[#d2b48c] text-white rounded"
               >
                 {submitting ? "Submitting..." : "Submit"}
               </button>
@@ -357,7 +370,7 @@ export default function Builder() {
 
             <button
               onClick={() => setShowPopup(false)}
-              className="px-4 py-2 bg-[#d2b48c] text-white rounded shadow"
+              className="px-4 py-2 bg-[#d2b48c] text-white rounded"
             >
               Close
             </button>
