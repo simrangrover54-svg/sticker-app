@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 
+export const runtime = "nodejs"; // 🔥 THIS FIXES VERCEL
+
 export async function POST(req: Request) {
   try {
     const formData = await req.formData();
