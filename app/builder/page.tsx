@@ -256,7 +256,7 @@ export default function Builder() {
 
             {/* ✅ BUTTON STYLE FILE INPUT */}
             <label className="block w-full mb-3">
-              <span className="block w-full py-3 px-4 text-center bg-white/80 border border-white/60 rounded-xl cursor-pointer hover:bg-white shadow-sm">
+            <span className="block w-full py-3 px-4 text-center bg-[#e6b98a] text-black border border-[#d9a977] rounded-xl cursor-pointer hover:bg-[#d9a977] shadow-sm font-medium">
                 {selection.file ? selection.file.name : "Browse File"}
               </span>
               <input
