@@ -288,7 +288,8 @@ export default function Builder() {
         {step === 5 && (
           <>
             <p className="text-neutral-500 mb-3">Summary</p>
-
+            <p className="text-neutral-500 mb-3">Contact number: 9341235488</p>
+            <p className="text-neutral-500 mb-3">Reference: Gautam</p>
             <div className="text-neutral-700 mb-4 space-y-1 text-sm">
               <p>Category: {selection.category}</p>
               <p>Type: {selection.type}</p>
