@@ -73,3 +73,35 @@ export async function POST(req: Request) {
     );
   }
 }
+const customerEmail = formData.get("email") as string;
+
+if (customerEmail) {
+  await transporter.sendMail({
+    from: `"Sticker Studio" <${process.env.EMAIL_USER}>`,
+    to: customerEmail,
+    subject: "Your Order Confirmation 🎉",
+    html: `
+      <div style="font-family: Arial; padding: 20px;">
+        <h2>Thank you for your order! 🙌</h2>
+
+        <p>We’ve received your sticker request. Here are your details:</p>
+
+        <hr />
+
+        <p><strong>Category:</strong> ${formData.get("category")}</p>
+        <p><strong>Type:</strong> ${formData.get("type")}</p>
+        <p><strong>Cutting:</strong> ${formData.get("cutting")}</p>
+        <p><strong>Email:</strong> ${customerEmail}</p>
+        <p><strong>Phone:</strong> ${formData.get("phone")}</p>
+
+        <hr />
+
+        <p>We’ll get back to you shortly 🚀 In case of any quieries please contact us at 9341235488 </p>
+
+        <p style="margin-top:20px;">
+          – D4Designism
+        </p>
+      </div>
+    `,
+  });
+}
