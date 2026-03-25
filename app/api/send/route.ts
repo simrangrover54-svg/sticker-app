@@ -10,7 +10,6 @@ export async function POST(req: Request) {
 
     const customerEmail = formData.get("email") as string;
 
-    // ✅ ADMIN EMAIL LIST
     const adminEmails = process.env.ADMIN_EMAILS
       ? process.env.ADMIN_EMAILS.split(",").map((e) => e.trim()).filter(Boolean)
       : [
@@ -19,7 +18,6 @@ export async function POST(req: Request) {
           "escapeskateboardingblr@gmail.com",
         ];
 
-    // ✅ MAIL TRANSPORTER
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -28,7 +26,6 @@ export async function POST(req: Request) {
       },
     });
 
-    // ✅ ATTACHMENT
     let attachments: any[] = [];
 
     if (file) {
@@ -39,59 +36,37 @@ export async function POST(req: Request) {
       });
     }
 
-    // =========================
-    // 📩 1. ADMIN EMAIL
-    // =========================
+    // ADMIN MAIL
     await transporter.sendMail({
       from: `"NEW ORDER 🚨" <${process.env.EMAIL_USER}>`,
       to: adminEmails,
       subject: `🚨 New Order from ${customerEmail}`,
       html: `
         <h2>New Order Received</h2>
-
         <p><strong>Category:</strong> ${formData.get("category")}</p>
         <p><strong>Type:</strong> ${formData.get("type")}</p>
         <p><strong>Cutting:</strong> ${formData.get("cutting")}</p>
-
-        <hr />
-
-        <p><strong>Customer Email:</strong> ${customerEmail}</p>
+        <p><strong>Email:</strong> ${customerEmail}</p>
         <p><strong>Phone:</strong> ${formData.get("phone")}</p>
       `,
       attachments,
     });
 
-    // =========================
-    // 📩 2. CUSTOMER EMAIL
-    // =========================
+    // CUSTOMER MAIL
     if (customerEmail) {
       await transporter.sendMail({
         from: `"D4Designism" <${process.env.EMAIL_USER}>`,
         to: customerEmail,
         subject: "Your Order Confirmation 🎉",
         html: `
-          <div style="font-family: Arial; padding: 20px;">
-            <h2>Thank you for your order! 🙌</h2>
+          <h2>Thank you for your order!</h2>
+          <p>We’ve received your request.</p>
 
-            <p>We’ve received your sticker request. Here are your details:</p>
+          <p><strong>Category:</strong> ${formData.get("category")}</p>
+          <p><strong>Type:</strong> ${formData.get("type")}</p>
+          <p><strong>Cutting:</strong> ${formData.get("cutting")}</p>
 
-            <hr />
-
-            <p><strong>Category:</strong> ${formData.get("category")}</p>
-            <p><strong>Type:</strong> ${formData.get("type")}</p>
-            <p><strong>Cutting:</strong> ${formData.get("cutting")}</p>
-            <p><strong>Email:</strong> ${customerEmail}</p>
-            <p><strong>Phone:</strong> ${formData.get("phone")}</p>
-
-            <hr />
-
-            <p>We’ll get back to you shortly 🚀</p>
-            <p>For queries: 9341235488</p>
-
-            <p style="margin-top:20px;">
-              – D4Designism
-            </p>
-          </div>
+          <p>We’ll contact you soon 🚀</p>
         `,
       });
     }
@@ -99,8 +74,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: true });
 
   } catch (err: any) {
-    console.error("❌ MAIL ERROR:", err);
-
+    console.error("MAIL ERROR:", err);
     return NextResponse.json(
       { success: false, error: err?.message },
       { status: 500 }
